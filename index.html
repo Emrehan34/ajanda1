@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📒 Kişisel Ajanda</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="topBar">
+        <div class="logo">📒 Ajanda</div>
+        <div class="month-nav">
+            <button id="prevMonthBtn" class="btn-icon">◀</button>
+            <span id="currentMonthLabel">Ocak</span>
+            <button id="nextMonthBtn" class="btn-icon">▶</button>
+            <span id="currentYearLabel">2026</span>
+        </div>
+        <div class="top-actions">
+            <button id="drawingToggle" class="btn-icon">✏️</button>
+            <button id="soundToggle" class="btn-icon">🔊</button>
+            <button id="settingsBtn" class="btn-icon">⚙️</button>
+        </div>
+    </div>
+
+    <div id="bookContainer" class="book">
+        <div id="pageFlipOverlay"></div>
+        <div id="pageContent">
+            
+            <div id="tabBar" class="tab-bar">
+                <button class="tab-btn active" data-tab="takvim">📅 Takvim</button>
+                <button class="tab-btn" data-tab="gunluk">📋 Günlük</button>
+                <button class="tab-btn" data-tab="gelir-gider">💰 Gelir/Gider</button>
+                <button class="tab-btn" data-tab="listeler">✅ Listeler</button>
+                <button class="tab-btn" data-tab="ders-programi">📚 Ders Programı</button>
+                <button class="tab-btn" data-tab="notlar">📝 Notlar</button>
+            </div>
+
+            <!-- Takvim Section -->
+            <div id="section-takvim" class="section active">
+                <div class="calendar-header">
+                    <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
+                </div>
+                <div id="calendarGrid" class="calendar-grid"></div>
+                <div class="legend">
+                    <span><span class="legend-dot holiday-dot">🔴</span> Tatil/Bayram</span>
+                    <span><span class="legend-dot birthday-dot">🎂</span> Doğum Günü</span>
+                    <span><span class="legend-dot event-dot">🔵</span> Etkinlik</span>
+                </div>
+                
+                <div id="dayDetail" class="day-detail">
+                    <h3 id="selectedDayTitle">Tarih Seçiniz</h3>
+                    <div id="dayEvents" class="event-list"></div>
+                    <div class="day-actions">
+                        <button id="addEventBtn" class="btn btn-primary">+ Etkinlik</button>
+                        <button id="addBirthdayBtn" class="btn btn-secondary">🎂 Doğum Günü</button>
+                    </div>
+                </div>
+                
+                <div class="birthdays-section">
+                    <h4>Yaklaşan Doğum Günleri</h4>
+                    <ul id="birthdayList"></ul>
+                </div>
+            </div>
+
+            <!-- Günlük Section -->
+            <div id="section-gunluk" class="section">
+                <div class="daily-header">
+                    <input type="date" id="dailyDatePicker">
+                    <button id="dailyAddBtn" class="btn btn-primary">+ Ekle</button>
+                </div>
+                <div id="dailyTimeline" class="timeline-container">
+                    <!-- Javascript will populate hours -->
+                </div>
+            </div>
+
+            <!-- Gelir/Gider Section -->
+            <div id="section-gelir-gider" class="section">
+                <div id="financeSummary" class="finance-summary">
+                    <div class="summary-card income">
+                        <span class="label">Gelir</span>
+                        <span class="amount" id="totalGelir">0 ₺</span>
+                    </div>
+                    <div class="summary-card expense">
+                        <span class="label">Gider</span>
+                        <span class="amount" id="totalGider">0 ₺</span>
+                    </div>
+                    <div class="summary-card balance">
+                        <span class="label">Kalan</span>
+                        <span class="amount" id="totalKalan">0 ₺</span>
+                    </div>
+                </div>
+                
+                <div class="finance-form">
+                    <select id="financeType">
+                        <option value="gelir">Gelir</option>
+                        <option value="gider">Gider</option>
+                    </select>
+                    <input type="text" id="financeCategory" placeholder="Kategori">
+                    <input type="number" id="financeAmount" placeholder="Tutar">
+                    <input type="text" id="financeDesc" placeholder="Açıklama">
+                    <input type="date" id="financeDate">
+                    <button id="financeAddBtn" class="btn btn-primary">Ekle</button>
+                </div>
+                
+                <div class="finance-content">
+                    <div class="table-container">
+                        <table id="financeTable">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Tür</th>
+                                    <th>Kategori</th>
+                                    <th>Açıklama</th>
+                                    <th>Tutar</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listeler Section -->
+            <div id="section-listeler" class="section">
+                <div class="list-tabs">
+                    <button id="listTabTodo" class="sub-tab active">📝 Yapılacaklar</button>
+                    <button id="listTabShopping" class="sub-tab">🛒 Alınacaklar</button>
+                </div>
+                
+                <div id="todoArea" class="list-area active">
+                    <div class="list-form">
+                        <input type="text" id="todoInput" placeholder="Yeni görev...">
+                        <select id="todoPriority">
+                            <option value="low">Düşük</option>
+                            <option value="medium" selected>Orta</option>
+                            <option value="high">Yüksek</option>
+                        </select>
+                        <input type="date" id="todoDueDate">
+                        <input type="text" id="todoEmoji" placeholder="😀" maxlength="2" style="width:40px; text-align:center;">
+                        <input type="color" id="todoColor" value="#c4956a">
+                        <button id="todoAddBtn" class="btn btn-primary">Ekle</button>
+                    </div>
+                    <ul id="todoList" class="checklist"></ul>
+                </div>
+                
+                <div id="shoppingArea" class="list-area" style="display:none;">
+                    <div class="list-form">
+                        <input type="text" id="shoppingInput" placeholder="Alınacak eşya/ürün...">
+                        <input type="text" id="shoppingEmoji" placeholder="🛒" maxlength="2" style="width:40px; text-align:center;">
+                        <input type="color" id="shoppingColor" value="#388e3c">
+                        <button id="shoppingAddBtn" class="btn btn-primary">Ekle</button>
+                    </div>
+                    <ul id="shoppingList" class="checklist"></ul>
+                </div>
+            </div>
+
+            <!-- Ders Programı Section -->
+            <div id="section-ders-programi" class="section">
+                <div class="schedule-header">
+                    <select id="scheduleProgramSelect">
+                        <option value="default">Varsayılan Program</option>
+                    </select>
+                    <button id="scheduleAddProgramBtn" class="btn btn-secondary">+ Yeni Program</button>
+                    <button id="scheduleAddSlotBtn" class="btn btn-primary">+ Saat Ekle</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="scheduleGrid">
+                        <thead>
+                            <tr>
+                                <th>Saat</th>
+                                <th>Pazartesi</th>
+                                <th>Salı</th>
+                                <th>Çarşamba</th>
+                                <th>Perşembe</th>
+                                <th>Cuma</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Javascript will populate rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Notlar Section -->
+            <div id="section-notlar" class="section">
+                <div class="notes-header">
+                    <button id="addNoteBtn" class="btn btn-primary">+ Yeni Not</button>
+                </div>
+                <div id="notesGrid" class="notes-grid"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Drawing Canvas Overlay -->
+    <div id="drawingOverlay">
+        <canvas id="drawingCanvas"></canvas>
+        <div id="drawingToolbar">
+            <button class="tool-btn active" data-tool="pen">✏️ Kalem</button>
+            <button class="tool-btn" data-tool="highlighter">🖍️ Fosforlu</button>
+            <button class="tool-btn" data-tool="eraser">🧽 Silgi</button>
+            <input type="color" id="drawingColor" value="#000000">
+            <input type="range" id="drawingSize" min="1" max="20" value="3">
+            <button id="drawingClear" class="btn btn-danger">🗑️ Temizle</button>
+            <button id="drawingSave" class="btn btn-primary">💾 Kaydet</button>
+            <button id="drawingClose" class="btn btn-secondary">❌ Kapat</button>
+        </div>
+    </div>
+
+    <!-- Sticker/Emoji Panel -->
+    <button id="stickerToggle" class="floating-btn">😀</button>
+    <div id="stickerPanel" class="side-panel">
+        <div class="panel-header">
+            <h3>Çıkartmalar</h3>
+            <button id="closeStickerPanel" class="btn-icon">❌</button>
+        </div>
+
+        <div class="sticker-grid" id="stickerGridContainer">
+            <!-- Stickers populated by JS -->
+        </div>
+    </div>
+
+    <!-- Shared Modal -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div id="modal" class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button id="modalClose" class="btn-icon">❌</button>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <!-- Dynamic content -->
+            </div>
+            <div id="modalFooter" class="modal-footer">
+                <button id="modalActionBtn" class="btn btn-primary">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ayarlar</h3>
+                <button id="settingsCloseBtn" class="btn-icon">❌</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <h4>Tema</h4>
+                    <div id="themeOptions" class="theme-options">
+                        <button class="theme-btn active" data-theme="klasik" style="background: #faf6f0; border-color: #c4956a;"></button>
+                        <button class="theme-btn" data-theme="koyu" style="background: #1a1a2e; border-color: #6366f1;"></button>
+                        <button class="theme-btn" data-theme="pembe" style="background: #fff0f5; border-color: #e91e63;"></button>
+                        <button class="theme-btn" data-theme="mavi" style="background: #e3f2fd; border-color: #1976d2;"></button>
+                        <button class="theme-btn" data-theme="yesil" style="background: #e8f5e9; border-color: #388e3c;"></button>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h4>Yazı Tipi</h4>
+                    <select id="fontOptions" class="form-control">
+                        <option value="modern">Modern</option>
+                        <option value="elyazisi">El Yazısı</option>
+                        <option value="klasik">Klasik</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <h4>Ses Efektleri</h4>
+                    <label class="switch-container">
+                        <input type="checkbox" id="settingSoundToggle" checked>
+                        Sayfa çevirme sesi açık
+                    </label>
+                </div>
+                <div class="settings-group">
+                    <h4>Veri Yönetimi</h4>
+                    <div class="data-actions">
+                        <button id="exportDataBtn" class="btn btn-primary">Verileri Dışa Aktar</button>
+                        <button id="importDataBtn" class="btn btn-secondary">Verileri İçe Aktar</button>
+                        <input type="file" id="importFileInput" style="display:none" accept=".json">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="modules/storage.js"></script>
+    <script src="modules/calendar.js"></script>
+    <script src="modules/daily.js"></script>
+    <script src="modules/finance.js"></script>
+    <script src="modules/lists.js"></script>
+    <script src="modules/schedule.js"></script>
+    <script src="modules/drawing.js"></script>
+    <script src="modules/media.js"></script>
+    <script src="modules/notes.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
